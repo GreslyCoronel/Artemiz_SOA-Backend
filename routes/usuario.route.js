@@ -64,11 +64,11 @@ router.get('/:firebaseUID', async (req, res) => {
 router.put('/:firebaseUID', async (req, res) => {
   try {
     const { firebaseUID } = req.params;
-    const { nombre, apellido, imgPerf } = req.body;
+     const { nombre, apellido, imgPerf, direccion, telefono } = req.body;
 
     const usuarioActualizado = await Usuario.findOneAndUpdate(
       { firebaseUID },
-      { nombre, apellido, imgPerf },
+      { nombre, apellido, imgPerf,  direccion, telefono },
       { new: true, runValidators: true }
     );
 
