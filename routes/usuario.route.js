@@ -4,7 +4,7 @@ const Usuario = require('../models/usuario.model');
 
 // Registrar usuario o retornar si ya existe
 router.post('/', async (req, res) => {
-     console.log('Cuerpo recibido:', req.body); // 👈 Esto imprimirá el contenido
+     console.log('Cuerpo recibido:', req.body); 
   try {
     const { firebaseUID, nombre, apellido, imgPerf } = req.body;
 
@@ -43,11 +43,11 @@ router.get('/', async (req, res) => {
 router.get('/:firebaseUID', async (req, res) => {
   try {
     const { firebaseUID } = req.params;
-    console.log('Buscando UID:', firebaseUID); // 👈 Agrega este log
+    console.log('Buscando UID:', firebaseUID); 
 
     const usuario = await Usuario.findOne({ firebaseUID });
 
-    console.log('Resultado de búsqueda:', usuario); // 👈 Y este también
+    console.log('Resultado de búsqueda:', usuario); 
 
     if (!usuario) {
       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
@@ -59,6 +59,30 @@ router.get('/:firebaseUID', async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
+
+// Actualizar usuario por firebaseUID
+router.put('/:firebaseUID', async (req, res) => {
+  try {
+    const { firebaseUID } = req.params;
+    const { nombre, apellido, imgPerf } = req.body;
+
+    const usuarioActualizado = await Usuario.findOneAndUpdate(
+      { firebaseUID },
+      { nombre, apellido, imgPerf },
+      { new: true, runValidators: true }
+    );
+
+    if (!usuarioActualizado) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado para actualizar' });
+    }
+
+    res.json(usuarioActualizado);
+  } catch (error) {
+    console.error('Error al actualizar usuario:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 
 
 module.exports = router;
