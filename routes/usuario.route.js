@@ -82,23 +82,6 @@ router.put('/:firebaseUID', async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
-// Eliminar usuario por firebaseUID
-router.delete('/:firebaseUID', async (req, res) => {
-  try {
-    const { firebaseUID } = req.params;
-
-    const usuarioEliminado = await Usuario.findOneAndDelete({ firebaseUID });
-
-    if (!usuarioEliminado) {
-      return res.status(404).json({ mensaje: 'Usuario no encontrado para eliminar' });
-    }
-
-    res.json({ mensaje: 'Usuario eliminado correctamente' });
-  } catch (error) {
-    console.error('Error al eliminar usuario:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
-  }
-});
 
 
 
