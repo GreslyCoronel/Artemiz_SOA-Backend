@@ -27,18 +27,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-
-// Obtener todos los usuarios
-router.get('/', async (req, res) => {
-  try {
-    const usuarios = await Usuario.find();
-    res.json(usuarios);
-  } catch (error) {
-    console.error('Error al obtener usuarios:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
-  }
-});
-
 // Obtener usuario por firebaseUID
 router.get('/:firebaseUID', async (req, res) => {
   try {
@@ -56,6 +44,17 @@ router.get('/:firebaseUID', async (req, res) => {
     res.json(usuario);
   } catch (error) {
     console.error('Error al obtener usuario:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Obtener todos los usuarios
+router.get('/', async (req, res) => {
+  try {
+    const usuarios = await Usuario.find();
+    res.json(usuarios);
+  } catch (error) {
+    console.error('Error al obtener usuarios:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
