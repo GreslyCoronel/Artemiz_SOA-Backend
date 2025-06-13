@@ -4,9 +4,10 @@ const usuarioSchema = new mongoose.Schema({
   firebaseUID: { type: String, required: true, unique: true },
   nombre: { type: String, required: true },
   apellido: { type: String, required: true },
+  email: {type:String, required:true},
   imgPerf: { type: String }, 
-  direccion: { type: String }, 
-  telefono: { type: String }   
+  proveedor: { type: String, required:true}, 
+  fechaRegistro: { type: Date, default: Date.now }   
 }, { collection: 'usuarios' });
 
 module.exports = mongoose.model('Usuario', usuarioSchema);

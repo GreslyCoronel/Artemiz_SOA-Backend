@@ -6,9 +6,9 @@ const Usuario = require('../models/usuario.model');
 router.post('/', async (req, res) => {
      console.log('Cuerpo recibido:', req.body); 
   try {
-    const { firebaseUID, nombre, apellido, imgPerf } = req.body;
+    const { firebaseUID, nombre, apellido, email, imgPerf, proveedor } = req.body;
 
-    if (!firebaseUID || !nombre || !apellido) {
+    if (!firebaseUID || !nombre || !apellido || !email || !proveedor) {
       return res.status(400).json({ error: 'Faltan campos requeridos' });
     }
 
@@ -17,7 +17,8 @@ router.post('/', async (req, res) => {
       return res.status(200).json(existingUser);
     }
 
-    const newUser = new Usuario({ firebaseUID, nombre, apellido, imgPerf });
+    const newUser = new Usuario({ firebaseUID, nombre, apellido,email, imgPerf, proveedor });
+    console.log("Nuevo usuario a guardar:", newUser);
     await newUser.save();
 
     res.status(201).json(newUser);
@@ -67,7 +68,7 @@ router.put('/:firebaseUID', async (req, res) => {
 
     const usuarioActualizado = await Usuario.findOneAndUpdate(
       { firebaseUID },
-      { nombre, apellido, imgPerf,  direccion, telefono },
+      { nombre, apellido,email, imgPerf,  direccion, telefono },
       { new: true, runValidators: true }
     );
 
