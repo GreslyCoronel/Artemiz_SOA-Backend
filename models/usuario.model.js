@@ -7,6 +7,7 @@ const usuarioSchema = new mongoose.Schema({
   email: {type:String, required:true},
   imgPerf: { type: String }, 
   proveedor: { type: String, required:true}, 
+  password: {type: String},
   fechaRegistro: { type: Date, default: Date.now }   
 }, { collection: 'usuarios' });
 

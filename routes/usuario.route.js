@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const Usuario = require('../models/usuario.model');
+const bcrypt = require('bcrypt');
 
 // Registrar usuario o retornar si ya existe
 router.post('/', async (req, res) => {
      console.log('Cuerpo recibido:', req.body); 
   try {
-    const { firebaseUID, nombre, apellido, email, imgPerf, proveedor } = req.body;
+    const { firebaseUID, nombre, apellido, email, imgPerf, proveedor, password } = req.body;
 
-    if (!firebaseUID || !nombre || !apellido || !email || !proveedor) {
+    if (!firebaseUID || !nombre || !apellido || !email || !proveedor || !password) {
       return res.status(400).json({ error: 'Faltan campos requeridos' });
     }
 
@@ -17,7 +18,18 @@ router.post('/', async (req, res) => {
       return res.status(200).json(existingUser);
     }
 
-    const newUser = new Usuario({ firebaseUID, nombre, apellido,email, imgPerf, proveedor });
+    console.log('Contraseña recibida:', password);
+    //Encriptar contraseña
+    let hashedPassword = '';
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      hashedPassword = await bcrypt.hash(password, salt);
+    }
+
+    const newUser = new Usuario({ 
+      firebaseUID, nombre, apellido,
+      email, imgPerf, proveedor, password: hashedPassword 
+    });
     console.log("Nuevo usuario a guardar:", newUser);
     await newUser.save();
 
@@ -27,6 +39,35 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
+
+
+// Login manual
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const usuario = await Usuario.findOne({ email });
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+    // Valida la contraseña con bcrypt
+    const esValida = await bcrypt.compare(password, usuario.password);
+    if (!esValida) {
+      return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
+    }
+
+    // Eliminar campo password antes de responder
+    const usuarioSinPassword = usuario.toObject();
+    delete usuarioSinPassword.password;
+
+    res.status(200).json(usuarioSinPassword);
+  } catch (error) {
+    console.error('❌ Error al iniciar sesión:', error);
+    res.status(500).json({ mensaje: 'Error interno del servidor' });
+  }
+});
+
 
 // Obtener usuario por firebaseUID
 router.get('/:firebaseUID', async (req, res) => {
